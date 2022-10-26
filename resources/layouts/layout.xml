@@ -1,5 +1,16 @@
-<layout id="MainLayout">
-    <!-- <bitmap id="id_monkey" x="center" y="center" filename="../drawables/monkey.png" /> -->
-    <label id="Description" x="40" y="40" font="Graphics.FONT_SYSTEM_MEDIUM" color="Graphics.COLOR_WHITE">PM 2.5 out/in:</label>
-    <label id="Value" x="center" y="center" font="Graphics.FONT_SYSTEM_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_WHITE"></label>
-</layout>
+
+<resources>
+    <layouts>
+        <layout id="MainLayout">
+            <!-- <bitmap id="id_monkey" x="center" y="center" filename="../drawables/monkey.png" /> -->
+            <drawable id="background" />
+            <label id="Description" x="40" y="40" font="Graphics.FONT_SYSTEM_MEDIUM" color="Graphics.COLOR_BLACK">PM 2.5 out/in:</label>
+            <label id="Value" x="center" y="center" font="Graphics.FONT_SYSTEM_MEDIUM" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_BLACK"></label>
+        </layout>
+    </layouts>
+    <drawables>
+        <drawable-list id="background">
+            <shape type="rectangle" x="0" y="0" width="fill" height="fill" color="Gfx.COLOR_WHITE" />
+        </drawable-list>
+    </drawables>
+</resources>

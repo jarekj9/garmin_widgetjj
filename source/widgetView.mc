@@ -11,15 +11,8 @@ class widgetView extends WatchUi.View {
         View.initialize();
     }
 
-    // Load your resources here
     function onLayout(dc as Dc) as Void {
         setLayout(Rez.Layouts.MainLayout(dc));
-    }
-
-    // Called when this View is brought to the foreground. Restore
-    // the state of this View and prepare it to be shown. This includes
-    // loading resources into memory.
-    function onShow() as Void {
         var textLabel1 = self.View.findDrawableById("Description") as Text;
         textLabel1.setText("PM 2.5 out/in:");
 
@@ -29,16 +22,13 @@ class widgetView extends WatchUi.View {
         request.makeRequest();
     }
 
-    // Update the view
-    function onUpdate(dc as Dc) as Void {
-        // Call the parent onUpdate function to redraw the layout
+    function onShow() as Void {
+    }
 
+    function onUpdate(dc as Dc) as Void {
         View.onUpdate(dc);
     }
 
-    // Called when this View is removed from the screen. Save the
-    // state of this View here. This includes freeing resources from
-    // memory.
     function onHide() as Void {
     }
 
@@ -56,19 +46,22 @@ class HttpRequest {
     public function initialize(onReceiveExternalArg) {
         onReceiveExternal = onReceiveExternalArg;
     }
-
+    
     function onReceive(responseCode as Number, data as Dictionary?) as Void {
         if (responseCode == 200) {
+            Ui.popView(0);
             System.println("Request Successful");
-
+            Application.getApp().setProperty("zakupy", data["zakupy"]);
+            self.onReceiveExternal.invoke(data["airlypm25"] + "/" + data["ikeapm25"]);
         } else {
+            Ui.popView(0);
             System.println("Response: " + responseCode);
-        }
-        //self.onReceiveExternal.invoke(data["Name"]);
-        self.onReceiveExternal.invoke(data["airlypm25"] + "/" + data["ikeapm25"]);
+            self.onReceiveExternal.invoke("Can't connect:" + responseCode);
+        }        
     }
 
     function makeRequest() as Void {
+        Ui.pushView( new LoadingView(), null, 0);
         var url = "https://garmin.y4r3k.duckdns.org/garmininfo";
         var app = Application.getApp();
         
