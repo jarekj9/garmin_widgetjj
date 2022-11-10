@@ -4,6 +4,7 @@ import Toybox.System;
 import Toybox.Communications;
 import Toybox.Lang;
 using Toybox.WatchUi as Ui;
+using Toybox.Application.Storage;
 
 class widgetView extends WatchUi.View {
 
@@ -13,12 +14,12 @@ class widgetView extends WatchUi.View {
 
     function onLayout(dc as Dc) as Void {
         setLayout(Rez.Layouts.MainLayout(dc));
-        var textLabel1 = self.View.findDrawableById("Description") as Text;
-        textLabel1.setText("PM 2.5 out/in:");
+        var descriptionLabel = self.View.findDrawableById("Description") as Text;
+        descriptionLabel.setText("PM 2.5 out/in:");
 
         var request = new HttpRequest(self.method(:changeText));
-        var textLabel2 = self.View.findDrawableById("Value") as Text;
-        textLabel2.setText("connecting...");
+        var textLabel = self.View.findDrawableById("Value") as Text;
+        textLabel.setText("connecting...");
         request.makeRequest();
     }
 
@@ -33,8 +34,8 @@ class widgetView extends WatchUi.View {
     }
 
     function changeText(text) as Void {
-        var textLabel2 = self.View.findDrawableById("Value") as Text;
-        textLabel2.setText(text);
+        var textLabel = self.View.findDrawableById("Value") as Text;
+        textLabel.setText(text);
         Ui.requestUpdate();
     }
 
@@ -51,12 +52,13 @@ class HttpRequest {
         if (responseCode == 200) {
             Ui.popView(0);
             System.println("Request Successful");
-            Application.getApp().setProperty("zakupy", data["zakupy"]);
-            self.onReceiveExternal.invoke(data["airlypm25"] + "/" + data["ikeapm25"]);
+            Extensions.setPropertyAndStorage("zakupy", data["zakupy"]);
+            Extensions.setPropertyAndStorage("pm25", data["airlypm25"] + "/" + data["ikeapm25"]);
+            self.onReceiveExternal.invoke(Extensions.getPropertyOrStorage("pm25"));
         } else {
             Ui.popView(0);
             System.println("Response: " + responseCode);
-            self.onReceiveExternal.invoke("Can't connect:" + responseCode);
+            self.onReceiveExternal.invoke("Can't connect:" + responseCode + "\n" + Extensions.getPropertyOrStorage("pm25"));
         }        
     }
 

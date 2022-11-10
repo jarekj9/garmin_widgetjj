@@ -23,12 +23,10 @@ class OtherView extends WatchUi.View {
     function onUpdate(dc as Dc) as Void {
         View.onUpdate(dc);
 
-        var app = Application.getApp();
-        
         var writer = new WrapText();
         var posY = dc.getHeight() / 6;
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_WHITE);
-        posY = writer.writeLines(dc, app.getProperty("zakupy"), Gfx.FONT_SMALL, posY);
+        posY = writer.writeLines(dc, Extensions.getPropertyOrStorage("zakupy"), Gfx.FONT_SMALL, posY);
     }
 
     function onHide() as Void {
