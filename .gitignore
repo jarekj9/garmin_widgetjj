@@ -1,0 +1,6 @@
+bin/
+widget.prg
+widget.prg.debug.xml
+mir/
+internal-mir/Rez.mir
+gen/
