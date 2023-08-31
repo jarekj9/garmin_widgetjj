@@ -20,7 +20,9 @@ class widgetView extends WatchUi.View {
     }
 
     function onShow() as Void {
-        self.valueText = Extensions.getPropertyOrStorage("zakupy");
+        var zakupyArray = Extensions.getPropertyOrStorageArr("zakupy");
+        self.valueText = Extensions.arrayToString(zakupyArray, ", ");
+    
     }
 
     function onUpdate(dc as Dc) as Void {
@@ -29,7 +31,7 @@ class widgetView extends WatchUi.View {
         var posY = dc.getHeight() / 6;
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_WHITE);
         if(self.valueText != null) {
-            posY = writer.writeLines(dc, self.valueText, Gfx.FONT_SMALL, posY);
+            posY = writer.writeLines(dc, self.valueText, Gfx.FONT_TINY, posY);
         }
     }
 

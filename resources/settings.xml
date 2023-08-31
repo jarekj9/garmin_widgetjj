@@ -1,7 +1,7 @@
 <resources>
     <properties>
         <property id="apikey" type="string">Bearer ---removed---</property>
-        <property id="zakupy" type="string"></property>
+        <property id="zakupy" type="array"></property>
         <property id="pm25" type="string"></property>
     </properties>
     <settings>
