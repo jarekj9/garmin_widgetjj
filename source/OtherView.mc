@@ -8,17 +8,17 @@ using Toybox.Graphics as Gfx;
 
 class OtherView extends WatchUi.View {
 
-    var valueText as String;
+    var itemsString as String;
     var choiceText as String;
     var onButtonDown = self.method(:onButtonDownAction);
     var onButtonUp = self.method(:onButtonUpAction);
     var onButtonSelect = self.method(:onButtonSelectAction);
     var itemsArray = [];
-    var currentChoicePosition = 0;
+    var currentChoicePosition = -1;
 
     function initialize() {
         View.initialize();
-        self.valueText = "";
+        self.itemsString = "";
         self.choiceText = "--scroll--";
     }
 
@@ -43,11 +43,12 @@ class OtherView extends WatchUi.View {
         View.onUpdate(dc);
         var writer = new WrapText();
         var posY = dc.getHeight() / 6;
-        if (self.valueText != null) {
+        if (self.itemsString != null) {
             dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_WHITE);
-            posY = writer.writeLines(dc, self.valueText, Gfx.FONT_TINY, posY);
+            posY = writer.writeLines(dc, self.itemsString, Gfx.FONT_TINY, posY);
             dc.setColor(Gfx.COLOR_RED, Gfx.COLOR_WHITE);
             dc.drawText(130, 10, Gfx.FONT_TINY , self.choiceText, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(130, 216, Gfx.FONT_TINY , "press to del", Graphics.TEXT_JUSTIFY_CENTER);
         }
     }
 
@@ -60,6 +61,9 @@ class OtherView extends WatchUi.View {
     }
 
     function onButtonUpAction() as Void {
+        if(self.currentChoicePosition == -1) {
+            return;
+        }
         if(self.currentChoicePosition > 0) {
             self.currentChoicePosition--;
         }
@@ -68,8 +72,12 @@ class OtherView extends WatchUi.View {
     }
 
     function onButtonSelectAction() as Void {
-        var request = new HttpRequest(self.method(:onRespReceived));
-        request.makeDeleteRequest();
+        if (self.currentChoicePosition == -1) {
+            return;
+        }
+        var request = new HttpRequest(self.method(:onDeleteRespReceived));
+        var deletedId = self.itemsArray[self.currentChoicePosition].keys()[0];
+        request.makeDeleteRequest(deletedId);
         self.onRespReceived();
     }
 
@@ -78,8 +86,30 @@ class OtherView extends WatchUi.View {
 
     function onRespReceived() as Void {
         var zakupyArray  = Extensions.getPropertyOrStorageArr("zakupy");
-        self.valueText = Extensions.arrayToString(zakupyArray, ", ");
+        self.itemsString = Extensions.arrayToString(zakupyArray, ", ");
         itemsArray = zakupyArray;
+        Ui.requestUpdate();
+    }
+
+    function onDeleteRespReceived(deletedId as String) as Void {
+        for (var i = 0; i < self.itemsArray.size(); i++) {
+            if (self.itemsArray[i] != null) {
+                var key = self.itemsArray[i].keys()[0];
+                if (key.equals(deletedId)) {
+                    self.itemsArray.remove(self.itemsArray[i]);
+                    self.itemsString = Extensions.arrayToString(self.itemsArray, ", ");
+                    if(self.currentChoicePosition == self.itemsArray.size()) {
+                        self.currentChoicePosition--;
+                    }
+                    if(self.currentChoicePosition == -1) {
+                        self.choiceText = "--empty--";
+                        break;
+                    }
+                    self.choiceText = itemsArray[self.currentChoicePosition].values()[0];
+                    break;
+                }
+            }
+        }
         Ui.requestUpdate();
     }
 
@@ -126,38 +156,36 @@ class HttpRequest {
         Communications.makeWebRequest(url, params, options, responseCallback);
     }
 
-    function makeDeleteRequest() as Void {
+    function makeDeleteRequest(deletedId as String) as Void {
         Ui.pushView( new LoadingView(), null, Ui.SLIDE_DOWN);
         var url = "https://garmin.y4r3k.duckdns.org/garmininfo";
         var app = Application.getApp();
         
-        var params = {
-            //"definedParams" => "123456789abcdefg"
+        var data = {
+            "id" => deletedId
         };
         var options = {
-            :method => Communications.HTTP_REQUEST_METHOD_GET,
+            :method => Communications.HTTP_REQUEST_METHOD_POST,
             :headers => {
                 "Authorization" => app.getProperty("apikey"),
-                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED
+                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_JSON
             },
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
         };
 
         var responseCallback = self.method(:onDeleteReceive);
-        Communications.makeWebRequest(url, params, options, responseCallback);
+        Communications.makeWebRequest(url, data, options, responseCallback);
     }
 
     function onDeleteReceive(responseCode as Number, data as Null or Dictionary or String) as Void {
         if (responseCode == 200) {
             Ui.popView(Ui.SLIDE_DOWN);
-            System.println("Request Successful");
-            Extensions.setPropertyAndStorageArr("zakupy", data["zakupy"]);
-            Extensions.setPropertyAndStorage("pm25", data["airlypm25"] + "/" + data["ikeapm25"]);
-            self.onAfterReceive.invoke();
+            System.println("Deleted" + data["id"]);
+
+            self.onAfterReceive.invoke(data["id"]);
         } else {
             Ui.popView(Ui.SLIDE_DOWN);
             System.println("Response: " + responseCode);
-            self.onAfterReceive.invoke("Can't connect:" + responseCode + "\n" + Extensions.getPropertyOrStorage("pm25"));
         }        
     }
 }
