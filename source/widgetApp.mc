@@ -22,6 +22,10 @@ class widgetApp extends Application.AppBase {
         return [ new widgetView(), new EnterDelegate() ] as Array<Views or InputDelegates>;
     }
 
+    function getGlanceView() {
+        return [ new WidgetGlanceView() ];
+    }
+
 }
 
 function getApp() as widgetApp {
