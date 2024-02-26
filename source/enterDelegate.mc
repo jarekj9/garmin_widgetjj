@@ -11,13 +11,13 @@ class EnterDelegate extends Ui.BehaviorDelegate {
   function onSelect() {
     System.println("onSelect behavior triggered");
     var view = Ui.getCurrentView();
-    if(view[0] instanceof OtherView) {
-        var otherView = view[0] as OtherView;
-        otherView.onButtonSelect.invoke();
+    if(view[0] instanceof OpenedView) {
+        var openedView = view[0] as OpenedView;
+        openedView.onButtonSelect.invoke();
         return true;
     }
 
-    Ui.pushView( new OtherView(), self, SLIDE_DOWN);
+    Ui.pushView( new OpenedView(), self, SLIDE_DOWN);
     
     BehaviorDelegate.onSelect();
     return true;
@@ -31,14 +31,14 @@ class EnterDelegate extends Ui.BehaviorDelegate {
 
     if(keyEvent.getKey() == 13) {
         var view = Ui.getCurrentView();
-        var otherView = view[0] as OtherView;
-        otherView.onButtonUp.invoke();
+        var openedView = view[0] as OpenedView;
+        openedView.onButtonUp.invoke();
     }
 
     if(keyEvent.getKey() == 8) {
         var view = Ui.getCurrentView();
-        var otherView = view[0] as OtherView;
-        otherView.onButtonDown.invoke();
+        var openedView = view[0] as OpenedView;
+        openedView.onButtonDown.invoke();
     }
 
     BehaviorDelegate.onKey(keyEvent);

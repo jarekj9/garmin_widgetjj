@@ -3,6 +3,7 @@ import Toybox.Lang;
 using Toybox.Application.Storage;
 using Toybox.Application;
 
+(:glance)
 class Extensions {
 
     static function setPropertyAndStorage(key as String, value as String) as Void {

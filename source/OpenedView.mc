@@ -6,7 +6,7 @@ import Toybox.Lang;
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 
-class OtherView extends WatchUi.View {
+class OpenedView extends WatchUi.View {
 
     var itemsString as String;
     var choiceText as String;
