@@ -3,5 +3,6 @@
     <string id="About">Testing app.</string>
     <string id="AppVersion">0.1</string>
     <string id="ApiKey">Key</string>
+    <string id="Url">Url</string>
 </strings>
 

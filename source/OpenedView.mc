@@ -137,9 +137,9 @@ class HttpRequest {
 
     function makeRequest() as Void {
         Ui.pushView( new LoadingView(), null, Ui.SLIDE_DOWN);
-        var url = "https://garmin.y4r3k.duckdns.org/garmininfo";
         var app = Application.getApp();
-        
+        var url = app.getProperty("url"); //"https://garmin.y4r3k.duckdns.org/garmininfo";
+
         var params = {
             //"definedParams" => "123456789abcdefg"
         };
@@ -158,8 +158,8 @@ class HttpRequest {
 
     function makeDeleteRequest(deletedId as String) as Void {
         Ui.pushView( new LoadingView(), null, Ui.SLIDE_DOWN);
-        var url = "https://garmin.y4r3k.duckdns.org/garmininfo";
         var app = Application.getApp();
+        var url = app.getProperty("url"); //"https://garmin.y4r3k.duckdns.org/garmininfo";
         
         var data = {
             "id" => deletedId
